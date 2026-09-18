@@ -1,8 +1,9 @@
 # SF-Housing-Prices
 
-Data pipeline behind a San Francisco apartment **rent** calculator/visualizer: pulls unit-level
-rents from public, licensed, and scraped sources (2022 onward), normalizes them onto one
-schema with amenities and geography, and publishes aggregates that a hosted app can serve
+Data pipeline and web app behind **SF Rent Atlas**, a San Francisco apartment **rent**
+estimator and map. The pipeline pulls unit-level rents from public, licensed, and scraped
+sources (2022 onward), normalizes them onto one schema with amenities and geography, fits a
+hedonic rent model, and publishes aggregates that the static app in [`web/`](web/) serves
 without any raw data. The plan this implements is in [`docs/DATA_PLAN.md`](docs/DATA_PLAN.md).
 
 ## Sources
@@ -35,7 +36,7 @@ uv run sfrent pull neighborhoods         # polygons -> data/reference/analysis_n
 uv run sfrent pull rentcast --check-only # 2 billed requests: X-Total-Count for Active and 2022+ Inactive
 uv run sfrent pull rentcast --status active   # ~6 requests; RENTCAST_REQUEST_BUDGET is a lifetime cap
 uv run sfrent pull craigslist            # dev: 2 search pages, 5 postings; prod: full weekly crawl
-uv run sfrent build                      # merge -> listings.parquet, flags, rent_adj, data/public/*
+uv run sfrent build                      # merge -> listings.parquet, flags, rent_adj, model, data/public/*
 uv run sfrent commute --hub financial_district --bedrooms 1   # or --lat/--lng
 uv run sfrent runlog                     # row counts per run
 ```
@@ -46,9 +47,28 @@ Every run appends a line to `data/runlog.jsonl`.
 
 - `data/raw/` (private, gitignored): gzip'd JSON lines per pull, Craigslist posting HTML, RentCast budget counter, Craigslist seen-state.
 - `data/processed/` (private, gitignored): one Parquet per source plus `listings.parquet`, the merged frame with `h3_r9`, `analysis_neighborhood`, `is_duplicate`, `is_suspicious`, `is_modelable`, `rent_adj`.
-- `data/public/` (committed): neighborhood x bedroom and hex x bedroom rent stats, neighborhood polygons. This is all the hosted app needs.
+- `data/public/` (committed): everything the hosted app needs, written by `sfrent build` and mirrored into `web/public/data/`:
+  - `neighborhood_bedroom_stats.{json,parquet}`, `hex_bedroom_stats.parquet`, `hexes.json` (H3 r9 cells with boundaries and per-bedroom medians)
+  - `analysis_neighborhoods.geojson` (simplified polygons with label points), `zori.json` (monthly index per zip and city)
+  - `model.json` (hedonic coefficients, see below) and `summary.json` (counts, citywide medians, fit stats)
 
 The canonical record is `sfrent.normalize.schema.Listing`. Missing values stay null; nothing is imputed at collection time. Banded Rent Board values fill `rent_low`/`rent_high` (and `sqft_low`/`sqft_high`) with the midpoint as the point value.
+
+## Rent model
+
+`sfrent.model` fits `log(rent_adj)` on modelable listings with a baseline per analysis neighborhood plus bedroom, bathroom, log-size, year-built-bucket and building-size-bucket effects (plain OLS, ~1 s on 108k rows). It reports R² and a 20% holdout MAE, and publishes the coefficients with residual quantiles so the app can compute `rent = exp(neighborhood + Σ effects)` and an 80% range client-side. Amenity effects are added once the Craigslist collector has enough postings.
+
+## Web app (`web/`)
+
+Next.js static export with MapLibre (OpenFreeMap tiles) and Recharts; no server, no keys. It reads the JSON in `web/public/data/` at build time.
+
+```bash
+cd web && npm install
+npm run dev          # http://localhost:3000
+npm run build        # static site in web/out
+```
+
+Deployed on Vercel with the project root set to `web/`; every push to `main` redeploys. After changing data, run `uv run sfrent build` and commit the refreshed `data/public/` and `web/public/data/` files.
 
 ## Scheduling (macOS launchd)
 
