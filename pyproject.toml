@@ -1,0 +1,43 @@
+[project]
+name = "sfrent"
+version = "0.1.0"
+description = "San Francisco apartment rent data pipeline: collectors, normalization, and analysis-ready Parquet."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+  "httpx>=0.27",
+  "polars>=1.0",
+  "pydantic>=2.7",
+  "python-dotenv>=1.0",
+  "h3>=4.0",
+  "shapely>=2.0",
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+]
+
+[project.optional-dependencies]
+analysis = ["duckdb>=1.0"]
+
+[project.scripts]
+sfrent = "sfrent.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sfrent"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

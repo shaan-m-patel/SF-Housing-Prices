@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+
+# Secrets
+.env
+
+# Data: raw and processed stay private (see docs/DATA_PLAN.md section 6).
+# Only data/public/ is committed.
+data/raw/*
+data/processed/*
+data/reference/*
+data/runlog.jsonl
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/reference/.gitkeep
+
+# Local logs from scheduled runs
+logs/
+
+.DS_Store

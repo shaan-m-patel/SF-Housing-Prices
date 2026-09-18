@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.sfrent.craigslist</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>__REPO__/scripts/launchd/run.sh</string>
+    <string>craigslist</string>
+  </array>
+  <!-- Weekly, Sunday 10:00 local: must run from the home network (datacenter IPs get 403). -->
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
+  <key>RunAtLoad</key><false/>
+  <key>Nice</key><integer>10</integer>
+  <key>StandardOutPath</key><string>__REPO__/logs/launchd.craigslist.log</string>
+  <key>StandardErrorPath</key><string>__REPO__/logs/launchd.craigslist.log</string>
+</dict>
+</plist>

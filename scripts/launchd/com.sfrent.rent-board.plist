@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.sfrent.rent-board</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>__REPO__/scripts/launchd/run.sh</string>
+    <string>rent-board</string>
+  </array>
+  <!-- Monthly: the Rent Board dataset refreshes a few times a year; the 2nd at 03:00 is plenty. -->
+  <key>StartCalendarInterval</key>
+  <dict><key>Day</key><integer>2</integer><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+  <key>RunAtLoad</key><false/>
+  <key>Nice</key><integer>10</integer>
+  <key>StandardOutPath</key><string>__REPO__/logs/launchd.rent-board.log</string>
+  <key>StandardErrorPath</key><string>__REPO__/logs/launchd.rent-board.log</string>
+</dict>
+</plist>

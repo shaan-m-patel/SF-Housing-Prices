@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.sfrent.rentcast</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>__REPO__/scripts/launchd/run.sh</string>
+    <string>rentcast</string>
+    <string>--status</string>
+    <string>active</string>
+  </array>
+  <!-- Weekly active snapshot: ~5-8 billed requests per run. The lifetime guard
+       (RENTCAST_REQUEST_BUDGET) stops the job once the key's allowance is spent. -->
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>4</integer><key>Minute</key><integer>0</integer></dict>
+  <key>RunAtLoad</key><false/>
+  <key>Nice</key><integer>10</integer>
+  <key>StandardOutPath</key><string>__REPO__/logs/launchd.rentcast.log</string>
+  <key>StandardErrorPath</key><string>__REPO__/logs/launchd.rentcast.log</string>
+</dict>
+</plist>
