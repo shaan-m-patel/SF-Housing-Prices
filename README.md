@@ -6,6 +6,9 @@ sources (2022 onward), normalizes them onto one schema with amenities and geogra
 hedonic rent model, and publishes aggregates that the static app in [`web/`](web/) serves
 without any raw data. The plan this implements is in [`docs/DATA_PLAN.md`](docs/DATA_PLAN.md).
 
+<img width="1440" height="760" alt="image" src="https://github.com/user-attachments/assets/cf45f53a-d991-4d3e-89eb-25f803ebbaf8" />
+
+
 ## Sources
 
 | Source | What it gives | Cadence | Redistributable |
